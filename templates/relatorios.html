@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Relatórios{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Relatórios</h1>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+  <div class="card-title">Filtrar por período</div>
+  <div style="display:flex;gap:.5rem;">
+    <a href="{{ url_for('relatorios', periodo='dia') }}" class="btn btn-sm {{ 'btn-secondary' if periodo == 'dia' else 'btn-outline' }}">Hoje</a>
+    <a href="{{ url_for('relatorios', periodo='semana') }}" class="btn btn-sm {{ 'btn-secondary' if periodo == 'semana' else 'btn-outline' }}">Últimos 7 dias</a>
+    <a href="{{ url_for('relatorios', periodo='mes') }}" class="btn btn-sm {{ 'btn-secondary' if periodo == 'mes' else 'btn-outline' }}">Este mês</a>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card blue">
+    <div class="stat-value">{{ os_periodo|length }}</div>
+    <div class="stat-label">OS no período</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-value">{{ os_pagas|length }}</div>
+    <div class="stat-label">OS pagas</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">R$ {{ "%.2f"|format(total_arrecadado) }}</div>
+    <div class="stat-label">Total arrecadado</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+  <div class="card">
+    <div class="card-title">OS por status</div>
+    <table style="font-size:.875rem;width:100%;">
+      {% for status, qtd in por_status.items() %}
+      <tr>
+        <td style="padding:6px 0;color:#666;">{{ status }}</td>
+        <td style="padding:6px 0;font-weight:600;">{{ qtd }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">Receita por forma de pagamento</div>
+    <table style="font-size:.875rem;width:100%;">
+      {% for forma, valor in por_pagamento.items() %}
+      <tr>
+        <td style="padding:6px 0;color:#666;">{{ forma }}</td>
+        <td style="padding:6px 0;font-weight:600;">R$ {{ "%.2f"|format(valor) }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Ordens de serviço no período</div>
+  {% if os_periodo %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Número</th><th>Cliente</th><th>Veículo</th><th>Status</th><th>Pagamento</th><th>Valor</th><th>Data</th></tr></thead>
+      <tbody>
+        {% for os in os_periodo|sort(attribute='data_abertura', reverse=True) %}
+        <tr>
+          <td><a href="{{ url_for('ver_ordem', id=os.id) }}" style="color:#e63946;font-weight:600;">{{ os.numero }}</a></td>
+          <td>{{ os.veiculo.cliente.nome }}</td>
+          <td>{{ os.veiculo.placa }}</td>
+          <td><span class="badge badge-{{ os.status|lower|replace(' ','') }}">{{ os.status }}</span></td>
+          <td><span class="badge badge-{{ os.status_pagamento|lower }}">{{ os.status_pagamento }}</span></td>
+          <td>R$ {{ "%.2f"|format(os.valor_total) }}</td>
+          <td>{{ os.data_abertura.strftime('%d/%m/%Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><p>Nenhuma OS no período selecionado.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

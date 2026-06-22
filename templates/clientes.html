@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Clientes{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Clientes</h1>
+  <a href="{{ url_for('novo_cliente') }}" class="btn btn-primary">➕ Novo cliente</a>
+</div>
+
+<div class="card">
+  <form class="search-bar" method="GET">
+    <input type="text" name="busca" class="form-control" placeholder="Buscar por nome ou CPF..." value="{{ busca }}">
+    <button type="submit" class="btn btn-secondary">Buscar</button>
+    {% if busca %}<a href="{{ url_for('clientes') }}" class="btn btn-outline">Limpar</a>{% endif %}
+  </form>
+
+  {% if clientes %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Veículos</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in clientes %}
+        <tr>
+          <td><strong>{{ c.nome }}</strong></td>
+          <td>{{ c.cpf }}</td>
+          <td>{{ c.telefone or '—' }}</td>
+          <td>{{ c.email or '—' }}</td>
+          <td>{{ c.veiculos|length }}</td>
+          <td>
+            <a href="{{ url_for('ver_cliente', id=c.id) }}" class="btn btn-outline btn-sm">Ver</a>
+            <a href="{{ url_for('editar_cliente', id=c.id) }}" class="btn btn-secondary btn-sm">Editar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">👤</div>
+    <p>Nenhum cliente encontrado.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

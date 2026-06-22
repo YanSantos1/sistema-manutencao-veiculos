@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Ordens de Serviço{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Ordens de Serviço</h1>
+  <a href="{{ url_for('nova_ordem') }}" class="btn btn-primary">➕ Nova OS</a>
+</div>
+
+<div class="card">
+  <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+    <a href="{{ url_for('ordens') }}" class="btn btn-sm {{ 'btn-secondary' if not status_filtro else 'btn-outline' }}">Todas</a>
+    <a href="{{ url_for('ordens', status='Em aberto') }}" class="btn btn-sm {{ 'btn-secondary' if status_filtro == 'Em aberto' else 'btn-outline' }}">Em aberto</a>
+    <a href="{{ url_for('ordens', status='Em andamento') }}" class="btn btn-sm {{ 'btn-secondary' if status_filtro == 'Em andamento' else 'btn-outline' }}">Em andamento</a>
+    <a href="{{ url_for('ordens', status='Concluído') }}" class="btn btn-sm {{ 'btn-secondary' if status_filtro == 'Concluído' else 'btn-outline' }}">Concluídas</a>
+    <a href="{{ url_for('ordens', status='Cancelado') }}" class="btn btn-sm {{ 'btn-secondary' if status_filtro == 'Cancelado' else 'btn-outline' }}">Canceladas</a>
+  </div>
+
+  {% if ordens %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Número</th><th>Cliente</th><th>Veículo</th><th>Descrição</th><th>Status</th><th>Pagamento</th><th>Valor</th><th>Data</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for os in ordens %}
+        <tr>
+          <td><strong style="color:#e63946;">{{ os.numero }}</strong></td>
+          <td>{{ os.veiculo.cliente.nome }}</td>
+          <td>{{ os.veiculo.placa }} — {{ os.veiculo.modelo }}</td>
+          <td>{{ os.descricao[:40] }}{% if os.descricao|length > 40 %}...{% endif %}</td>
+          <td><span class="badge badge-{{ os.status|lower|replace(' ','') }}">{{ os.status }}</span></td>
+          <td><span class="badge badge-{{ os.status_pagamento|lower }}">{{ os.status_pagamento }}</span></td>
+          <td>R$ {{ "%.2f"|format(os.valor_total) }}</td>
+          <td>{{ os.data_abertura.strftime('%d/%m/%Y') }}</td>
+          <td><a href="{{ url_for('ver_ordem', id=os.id) }}" class="btn btn-outline btn-sm">Ver</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">📋</div>
+    <p>Nenhuma ordem de serviço encontrada.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

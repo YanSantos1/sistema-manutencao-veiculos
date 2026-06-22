@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if veiculo else 'Novo' }} Veículo{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">{{ 'Editar Veículo' if veiculo else 'Novo Veículo' }}</h1>
+  <a href="{{ url_for('ver_cliente', id=cliente.id) }}" class="btn btn-outline">← Voltar</a>
+</div>
+<div class="card">
+  <p style="font-size:.875rem;color:#666;margin-bottom:1rem;">Cliente: <strong>{{ cliente.nome }}</strong></p>
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Placa *</label>
+        <input type="text" name="placa" class="form-control" value="{{ veiculo.placa if veiculo else '' }}" placeholder="ABC-1234" required style="text-transform:uppercase;">
+      </div>
+      <div class="form-group">
+        <label>Marca *</label>
+        <input type="text" name="marca" class="form-control" value="{{ veiculo.marca if veiculo else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Modelo *</label>
+        <input type="text" name="modelo" class="form-control" value="{{ veiculo.modelo if veiculo else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Ano *</label>
+        <input type="number" name="ano" class="form-control" value="{{ veiculo.ano if veiculo else '' }}" min="1950" max="2030" required>
+      </div>
+      <div class="form-group">
+        <label>Cor</label>
+        <input type="text" name="cor" class="form-control" value="{{ veiculo.cor if veiculo else '' }}">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{{ 'Salvar alterações' if veiculo else 'Cadastrar veículo' }}</button>
+      <a href="{{ url_for('ver_cliente', id=cliente.id) }}" class="btn btn-outline">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

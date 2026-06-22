@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Oficina{% endblock %} — Sistema de Manutenção</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar { background: #1a1a2e; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    .navbar-brand { font-size: 1.1rem; font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .navbar-brand span { color: #e63946; }
+    .navbar-nav { display: flex; gap: 4px; }
+    .navbar-nav a { color: #ccc; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: .875rem; transition: background .2s; }
+    .navbar-nav a:hover, .navbar-nav a.active { background: rgba(255,255,255,.12); color: #fff; }
+    .navbar-user { font-size: .8rem; color: #aaa; display: flex; align-items: center; gap: 12px; }
+    .navbar-user strong { color: #fff; }
+    .btn-logout { background: rgba(230,57,70,.2); color: #e63946; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: .8rem; text-decoration: none; }
+    .btn-logout:hover { background: #e63946; color: #fff; }
+
+    /* LAYOUT */
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .page-title { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; }
+
+    /* CARDS */
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: 1.5rem; margin-bottom: 1rem; }
+    .card-title { font-size: 1rem; font-weight: 600; color: #1a1a2e; margin-bottom: 1rem; padding-bottom: .75rem; border-bottom: 1px solid #f0f2f5; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); border-left: 4px solid #e63946; }
+    .stat-card.blue { border-color: #457b9d; }
+    .stat-card.green { border-color: #2a9d8f; }
+    .stat-card.orange { border-color: #e9c46a; }
+    .stat-card.purple { border-color: #7b2d8b; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: #1a1a2e; }
+    .stat-label { font-size: .8rem; color: #666; margin-top: 4px; }
+
+    /* TABELA */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    th { background: #f8f9fa; text-align: left; padding: 10px 14px; font-weight: 600; color: #555; border-bottom: 2px solid #e9ecef; }
+    td { padding: 10px 14px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
+    tr:hover td { background: #fafbfc; }
+
+    /* BOTÕES */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: .875rem; font-weight: 500; text-decoration: none; transition: all .2s; }
+    .btn-primary { background: #e63946; color: #fff; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn-secondary { background: #457b9d; color: #fff; }
+    .btn-secondary:hover { background: #1d4e6b; }
+    .btn-success { background: #2a9d8f; color: #fff; }
+    .btn-success:hover { background: #1f7268; }
+    .btn-warning { background: #e9c46a; color: #333; }
+    .btn-warning:hover { background: #d4a017; }
+    .btn-danger { background: #e63946; color: #fff; }
+    .btn-danger:hover { background: #c1121f; }
+    .btn-outline { background: transparent; border: 1.5px solid #ddd; color: #555; }
+    .btn-outline:hover { border-color: #aaa; background: #f8f9fa; }
+    .btn-sm { padding: 5px 10px; font-size: .8rem; }
+
+    /* FORMULÁRIOS */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: .875rem; font-weight: 500; color: #444; margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 9px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: .875rem; transition: border .2s; outline: none; }
+    .form-control:focus { border-color: #e63946; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .form-actions { display: flex; gap: .75rem; margin-top: 1.5rem; }
+
+    /* BADGES */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: .75rem; font-weight: 600; }
+    .badge-aberto { background: #fff3cd; color: #856404; }
+    .badge-andamento { background: #cff4fc; color: #055160; }
+    .badge-concluido { background: #d1e7dd; color: #0a3622; }
+    .badge-cancelado { background: #f8d7da; color: #842029; }
+    .badge-pago { background: #d1e7dd; color: #0a3622; }
+    .badge-pendente { background: #fff3cd; color: #856404; }
+    .badge-gestor { background: #e2d9f3; color: #3c3489; }
+    .badge-atendente { background: #d1e7dd; color: #0a3622; }
+    .badge-mecanico { background: #fde8d8; color: #6e2f0a; }
+
+    /* ALERTAS */
+    .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 1rem; font-size: .875rem; }
+    .alert-success { background: #d1e7dd; color: #0a3622; border: 1px solid #badbcc; }
+    .alert-danger { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+    .alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffecb5; }
+    .alert-info { background: #cff4fc; color: #055160; border: 1px solid #b6effb; }
+
+    /* BUSCA */
+    .search-bar { display: flex; gap: .5rem; margin-bottom: 1rem; }
+    .search-bar .form-control { max-width: 320px; }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #999; }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; border-radius: 12px; padding: 1.5rem; width: 100%; max-width: 440px; box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+    .modal-actions { display: flex; gap: .75rem; margin-top: 1.25rem; justify-content: flex-end; }
+
+    select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  </style>
+</head>
+<body>
+
+{% if session.usuario_id %}
+<nav class="navbar">
+  <a class="navbar-brand" href="{{ url_for('dashboard') }}">🔧 <span>Oficina</span> Pro</a>
+  <div class="navbar-nav">
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('clientes') }}">Clientes</a>
+    <a href="{{ url_for('ordens') }}">Ordens de Serviço</a>
+    <a href="{{ url_for('pagamentos_pendentes') }}">Pagamentos</a>
+    {% if session.perfil == 'gestor' %}
+    <a href="{{ url_for('relatorios') }}">Relatórios</a>
+    <a href="{{ url_for('usuarios') }}">Usuários</a>
+    {% endif %}
+  </div>
+  <div class="navbar-user">
+    <span>Olá, <strong>{{ session.nome }}</strong>
+    <span class="badge badge-{{ session.perfil }}">{{ session.perfil }}</span></span>
+    <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+  </div>
+</nav>
+{% endif %}
+
+<div class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

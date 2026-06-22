@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ cliente.nome }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">{{ cliente.nome }}</h1>
+  <div style="display:flex;gap:.5rem;">
+    <a href="{{ url_for('editar_cliente', id=cliente.id) }}" class="btn btn-secondary">Editar</a>
+    <a href="{{ url_for('clientes') }}" class="btn btn-outline">← Voltar</a>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+  <div class="card">
+    <div class="card-title">Dados do cliente</div>
+    <table style="font-size:.875rem;">
+      <tr><td style="color:#888;padding:4px 0;width:100px;">CPF</td><td>{{ cliente.cpf }}</td></tr>
+      <tr><td style="color:#888;padding:4px 0;">Telefone</td><td>{{ cliente.telefone or '—' }}</td></tr>
+      <tr><td style="color:#888;padding:4px 0;">E-mail</td><td>{{ cliente.email or '—' }}</td></tr>
+      <tr><td style="color:#888;padding:4px 0;">Cadastrado</td><td>{{ cliente.criado_em.strftime('%d/%m/%Y') }}</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+      Veículos
+      <a href="{{ url_for('novo_veiculo', cliente_id=cliente.id) }}" class="btn btn-primary btn-sm">➕ Novo veículo</a>
+    </div>
+    {% if cliente.veiculos %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Placa</th><th>Veículo</th><th>Ano</th><th>Cor</th><th></th></tr></thead>
+        <tbody>
+          {% for v in cliente.veiculos %}
+          <tr>
+            <td><strong>{{ v.placa }}</strong></td>
+            <td>{{ v.marca }} {{ v.modelo }}</td>
+            <td>{{ v.ano }}</td>
+            <td>{{ v.cor or '—' }}</td>
+            <td><a href="{{ url_for('editar_veiculo', id=v.id) }}" class="btn btn-outline btn-sm">Editar</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding:1.5rem;">
+      <p>Nenhum veículo cadastrado.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if cliente.veiculos %}
+<div class="card">
+  <div class="card-title">Histórico de manutenções</div>
+  {% set todas_os = [] %}
+  {% for v in cliente.veiculos %}{% for os in v.ordens %}{% set _ = todas_os.append(os) %}{% endfor %}{% endfor %}
+  {% if todas_os %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>OS</th><th>Veículo</th><th>Descrição</th><th>Status</th><th>Pagamento</th><th>Valor</th><th>Data</th></tr></thead>
+      <tbody>
+        {% for os in todas_os|sort(attribute='data_abertura', reverse=True) %}
+        <tr>
+          <td><a href="{{ url_for('ver_ordem', id=os.id) }}" style="color:#e63946;font-weight:600;">{{ os.numero }}</a></td>
+          <td>{{ os.veiculo.placa }}</td>
+          <td>{{ os.descricao[:50] }}{% if os.descricao|length > 50 %}...{% endif %}</td>
+          <td><span class="badge badge-{{ os.status|lower|replace(' ', '') }}">{{ os.status }}</span></td>
+          <td><span class="badge badge-{{ os.status_pagamento|lower }}">{{ os.status_pagamento }}</span></td>
+          <td>R$ {{ "%.2f"|format(os.valor_total) }}</td>
+          <td>{{ os.data_abertura.strftime('%d/%m/%Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:1.5rem;"><p>Nenhuma ordem de serviço registrada.</p></div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

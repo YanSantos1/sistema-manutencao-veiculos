@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Dashboard</h1>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card blue">
+    <div class="stat-value">{{ total_clientes }}</div>
+    <div class="stat-label">Clientes cadastrados</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ total_veiculos }}</div>
+    <div class="stat-label">Veículos registrados</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-value">{{ os_abertas }}</div>
+    <div class="stat-label">OS em aberto</div>
+  </div>
+  <div class="stat-card orange">
+    <div class="stat-value">{{ os_andamento }}</div>
+    <div class="stat-label">OS em andamento</div>
+  </div>
+  <div class="stat-card purple">
+    <div class="stat-value">{{ os_pendentes }}</div>
+    <div class="stat-label">Pagamentos pendentes</div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+  <div class="card">
+    <div class="card-title">Acesso rápido</div>
+    <div style="display:flex; flex-direction:column; gap:.75rem;">
+      <a href="{{ url_for('novo_cliente') }}" class="btn btn-primary">➕ Novo cliente</a>
+      <a href="{{ url_for('nova_ordem') }}" class="btn btn-secondary">📋 Nova ordem de serviço</a>
+      <a href="{{ url_for('pagamentos_pendentes') }}" class="btn btn-warning">💰 Ver pagamentos pendentes</a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Informações do sistema</div>
+    <p style="font-size:.875rem; color:#666; line-height:1.7;">
+      Bem-vindo, <strong>{{ session.nome }}</strong>!<br>
+      Perfil: <span class="badge badge-{{ session.perfil }}">{{ session.perfil }}</span><br><br>
+      Use o menu acima para navegar entre os módulos do sistema.
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Usuários{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Usuários</h1>
+  <a href="{{ url_for('novo_usuario') }}" class="btn btn-primary">➕ Novo usuário</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Redefinir senha</th></tr></thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr>
+          <td><strong>{{ u.nome }}</strong></td>
+          <td>{{ u.email }}</td>
+          <td><span class="badge badge-{{ u.perfil }}">{{ u.perfil }}</span></td>
+          <td>{{ 'Ativo' if u.ativo else 'Inativo' }}</td>
+          <td>
+            <button onclick="document.getElementById('modal-senha-{{ u.id }}').classList.add('active')" class="btn btn-outline btn-sm">🔑 Redefinir</button>
+            <div class="modal-overlay" id="modal-senha-{{ u.id }}">
+              <div class="modal">
+                <div class="modal-title">Redefinir senha — {{ u.nome }}</div>
+                <form method="POST" action="{{ url_for('redefinir_senha', id=u.id) }}">
+                  <div class="form-group">
+                    <label>Nova senha (mínimo 6 caracteres)</label>
+                    <input type="password" name="nova_senha" class="form-control" minlength="6" required>
+                  </div>
+                  <div class="modal-actions">
+                    <button type="button" onclick="document.getElementById('modal-senha-{{ u.id }}').classList.remove('active')" class="btn btn-outline">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

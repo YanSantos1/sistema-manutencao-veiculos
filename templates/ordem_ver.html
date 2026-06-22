@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}{{ os.numero }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">{{ os.numero }} <span class="badge badge-{{ os.status|lower|replace(' ','') }}">{{ os.status }}</span></h1>
+  <a href="{{ url_for('ordens') }}" class="btn btn-outline">← Voltar</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+  <div class="card">
+    <div class="card-title">Informações da OS</div>
+    <table style="font-size:.875rem;">
+      <tr><td style="color:#888;padding:4px 0;width:130px;">Cliente</td><td><strong>{{ os.veiculo.cliente.nome }}</strong></td></tr>
+      <tr><td style="color:#888;padding:4px 0;">Veículo</td><td>{{ os.veiculo.placa }} — {{ os.veiculo.marca }} {{ os.veiculo.modelo }} ({{ os.veiculo.ano }})</td></tr>
+      <tr><td style="color:#888;padding:4px 0;">Descrição</td><td>{{ os.descricao }}</td></tr>
+      <tr><td style="color:#888;padding:4px 0;">Abertura</td><td>{{ os.data_abertura.strftime('%d/%m/%Y %H:%M') }}</td></tr>
+      {% if os.data_conclusao %}<tr><td style="color:#888;padding:4px 0;">Conclusão</td><td>{{ os.data_conclusao.strftime('%d/%m/%Y %H:%M') }}</td></tr>{% endif %}
+      <tr><td style="color:#888;padding:4px 0;">Valor total</td><td><strong style="font-size:1.1rem;">R$ {{ "%.2f"|format(os.valor_total) }}</strong></td></tr>
+      <tr><td style="color:#888;padding:4px 0;">Pagamento</td><td><span class="badge badge-{{ os.status_pagamento|lower }}">{{ os.status_pagamento }}</span> {% if os.forma_pagamento %}— {{ os.forma_pagamento }}{% endif %}</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ações</div>
+    <div style="display:flex;flex-direction:column;gap:.75rem;">
+
+      {% if os.status not in ['Concluído', 'Cancelado'] %}
+      <form method="POST" action="{{ url_for('atualizar_status', id=os.id) }}">
+        {% if os.status == 'Em aberto' %}
+        <button name="status" value="Em andamento" class="btn btn-secondary" style="width:100%;">▶ Iniciar atendimento</button>
+        {% elif os.status == 'Em andamento' %}
+        <button name="status" value="Concluído" class="btn btn-success" style="width:100%;">✅ Marcar como concluído</button>
+        {% endif %}
+      </form>
+      {% endif %}
+
+      {% if os.status == 'Concluído' and os.status_pagamento == 'Pendente' %}
+      <button onclick="document.getElementById('modal-pagar').classList.add('active')" class="btn btn-warning" style="width:100%;">💰 Registrar pagamento</button>
+      {% endif %}
+
+      {% if os.status == 'Em aberto' %}
+      <button onclick="document.getElementById('modal-cancelar').classList.add('active')" class="btn btn-danger" style="width:100%;">✖ Cancelar OS</button>
+      {% endif %}
+
+      {% if os.motivo_cancelamento %}
+      <div class="alert alert-warning">Motivo do cancelamento: {{ os.motivo_cancelamento }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ITENS DA OS -->
+<div class="card">
+  <div class="card-title">Serviços e peças</div>
+  {% if os.itens %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Descrição</th><th>Qtd</th><th>Valor unit.</th><th>Subtotal</th>{% if os.status not in ['Concluído','Cancelado'] %}<th></th>{% endif %}</tr></thead>
+      <tbody>
+        {% for item in os.itens %}
+        <tr>
+          <td>{{ item.descricao }}</td>
+          <td>{{ item.quantidade }}</td>
+          <td>R$ {{ "%.2f"|format(item.valor_unitario) }}</td>
+          <td><strong>R$ {{ "%.2f"|format(item.subtotal) }}</strong></td>
+          {% if os.status not in ['Concluído','Cancelado'] %}
+          <td>
+            <form method="POST" action="{{ url_for('remover_item', id=os.id, item_id=item.id) }}" onsubmit="return confirm('Remover item?')">
+              <button type="submit" class="btn btn-danger btn-sm">✖</button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3" style="text-align:right;font-weight:600;">Total:</td><td><strong style="font-size:1.1rem;">R$ {{ "%.2f"|format(os.valor_total) }}</strong></td>{% if os.status not in ['Concluído','Cancelado'] %}<td></td>{% endif %}</tr>
+      </tfoot>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:1.5rem;"><p>Nenhum item adicionado ainda.</p></div>
+  {% endif %}
+
+  {% if os.status not in ['Concluído', 'Cancelado'] %}
+  <hr style="margin:1rem 0;border:none;border-top:1px solid #f0f2f5;">
+  <p style="font-weight:600;margin-bottom:.75rem;font-size:.875rem;">Adicionar item</p>
+  <form method="POST" action="{{ url_for('adicionar_item', id=os.id) }}">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Descrição *</label>
+        <input type="text" name="descricao" class="form-control" required placeholder="Ex: Troca de óleo">
+      </div>
+      <div class="form-group">
+        <label>Quantidade *</label>
+        <input type="number" name="quantidade" class="form-control" value="1" min="0.1" step="0.1" required>
+      </div>
+      <div class="form-group">
+        <label>Valor unitário (R$) *</label>
+        <input type="number" name="valor_unitario" class="form-control" min="0" step="0.01" required placeholder="0,00">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Adicionar item</button>
+  </form>
+  {% endif %}
+</div>
+
+<!-- MODAL PAGAMENTO -->
+<div class="modal-overlay" id="modal-pagar">
+  <div class="modal">
+    <div class="modal-title">💰 Registrar Pagamento</div>
+    <p style="font-size:.875rem;color:#666;margin-bottom:1rem;">Valor total: <strong>R$ {{ "%.2f"|format(os.valor_total) }}</strong></p>
+    <form method="POST" action="{{ url_for('registrar_pagamento', id=os.id) }}">
+      <div class="form-group">
+        <label>Forma de pagamento *</label>
+        <select name="forma_pagamento" class="form-control" required>
+          <option value="">Selecione...</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Cartão de débito">Cartão de débito</option>
+          <option value="Cartão de crédito">Cartão de crédito</option>
+          <option value="PIX">PIX</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" onclick="document.getElementById('modal-pagar').classList.remove('active')" class="btn btn-outline">Cancelar</button>
+        <button type="submit" class="btn btn-success">Confirmar pagamento</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL CANCELAR -->
+<div class="modal-overlay" id="modal-cancelar">
+  <div class="modal">
+    <div class="modal-title">✖ Cancelar Ordem de Serviço</div>
+    <form method="POST" action="{{ url_for('cancelar_ordem', id=os.id) }}">
+      <div class="form-group">
+        <label>Motivo do cancelamento *</label>
+        <textarea name="motivo" class="form-control" rows="3" required placeholder="Informe o motivo..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" onclick="document.getElementById('modal-cancelar').classList.remove('active')" class="btn btn-outline">Voltar</button>
+        <button type="submit" class="btn btn-danger">Confirmar cancelamento</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
