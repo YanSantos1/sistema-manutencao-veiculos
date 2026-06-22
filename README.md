@@ -1,72 +1,25 @@
-\# Sistema de Controle de Manutencao de Veiculos
+# Sistema de Controle de Manutencao de Veiculos
 
+Sistema web em Python com Flask para gerenciamento de manutencao de veiculos.
 
+## Tecnologias
 
-Sistema web desenvolvido em Python com Flask para gerenciamento de manutencao de veiculos em oficinas mecanicas.
+- Python 3
+- Flask
+- SQLite
+- HTML/CSS
 
+## Como executar
 
+1. Clone o repositorio
+2. Instale as dependencias: pip install -r src/requirements.txt
+3. Execute: python src/app.py
+4. Acesse: http://localhost:5000
 
-\## Tecnologias utilizadas
+## Estrutura
 
-
-
-\- Python 3
-
-\- Flask
-
-\- SQLite
-
-\- HTML/CSS
-
-
-
-\## Como executar
-
-
-
-1\. Clone o repositorio:
-
-git clone https://github.com/YanSantos1/sistema-manutencao-veiculos.git
-
-
-
-2\. Instale as dependencias:
-
-pip install -r src/requirements.txt
-
-
-
-3\. Execute o sistema:
-
-python src/app.py
-
-
-
-4\. Acesse no navegador: http://localhost:5000
-
-
-
-\## Estrutura de pastas
-
-
-
-\- src/ - codigo-fonte da aplicacao
-
-\- test/unit/ - testes unitarios com PyTest
-
-\- docs/ - documentacao e diagramas
-
-\- build/ - arquivos compilados
-
-\- tools/ - utilitarios
-
-
-
-\## Testes
-
-
-
-pip install pytest
-
-pytest test/unit/
-
+- src/ - codigo-fonte
+- test/unit/ - testes PyTest
+- docs/ - documentacao
+- build/ - arquivos compilados
+- tools/ - utilitarios
