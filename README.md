@@ -1,76 +1,72 @@
-# \# Sistema de Controle de Manutenção de Veículos
+\# Sistema de Controle de Manutencao de Veiculos
 
-# 
 
-# Sistema web desenvolvido em Python com Flask para gerenciamento de manutenção de veículos em oficinas mecânicas.
 
-# 
+Sistema web desenvolvido em Python com Flask para gerenciamento de manutencao de veiculos em oficinas mecanicas.
 
-# \## Tecnologias utilizadas
 
-# 
 
-# \- Python 3
+\## Tecnologias utilizadas
 
-# \- Flask
 
-# \- SQLite
 
-# \- HTML/CSS
+\- Python 3
 
-# 
+\- Flask
 
-# \## Como executar o projeto
+\- SQLite
 
-# 
+\- HTML/CSS
 
-# 1\. Clone o repositório:
 
-# &#x20;  git clone https://github.com/YanSantos1/sistema-manutencao-veiculos.git
 
-# 
+\## Como executar
 
-# 2\. Instale as dependências:
 
-# &#x20;  pip install -r src/requirements.txt
 
-# 
+1\. Clone o repositorio:
 
-# 3\. Execute o sistema:
+git clone https://github.com/YanSantos1/sistema-manutencao-veiculos.git
 
-# &#x20;  python src/app.py
 
-# 
 
-# 4\. Acesse no navegador:
+2\. Instale as dependencias:
 
-# &#x20;  http://localhost:5000
+pip install -r src/requirements.txt
 
-# 
 
-# \## Estrutura de pastas
 
-# 
+3\. Execute o sistema:
 
-# \- src/ — código-fonte da aplicação
+python src/app.py
 
-# \- test/unit/ — testes unitários com PyTest
 
-# \- test/integration/ — testes de integração
 
-# \- docs/ — documentação, diagramas e requisitos
+4\. Acesse no navegador: http://localhost:5000
 
-# \- build/ — arquivos compilados
 
-# \- tools/ — utilitários
 
-# 
+\## Estrutura de pastas
 
-# \## Testes
 
-# 
 
-# &#x20;  pip install pytest
+\- src/ - codigo-fonte da aplicacao
 
-# &#x20;  pytest test/unit/
+\- test/unit/ - testes unitarios com PyTest
+
+\- docs/ - documentacao e diagramas
+
+\- build/ - arquivos compilados
+
+\- tools/ - utilitarios
+
+
+
+\## Testes
+
+
+
+pip install pytest
+
+pytest test/unit/
 
