@@ -457,6 +457,7 @@ def criar_banco():
             db.session.commit()
             print("✅ Usuário admin criado: admin@oficina.com / admin123")
 
+criar_banco()
+
 if __name__ == '__main__':
-    criar_banco()
     app.run(debug=True)
